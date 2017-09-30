@@ -56,7 +56,7 @@
 
 ![](redispic/b7.png)
 
-RSB 文件结构
+RDB 文件结构
 
 ![](redispic/b8.png)
 

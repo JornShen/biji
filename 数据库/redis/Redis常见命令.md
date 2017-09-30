@@ -11,7 +11,6 @@ make
 
 then enter the src dir and execute make test 
 
-
 redis-server is the Redis Server itself. 
 
 redis-sentinel is the Redis Sentinel executable (monitoring and failover).
@@ -55,7 +54,7 @@ not limited to a simple string, but can also hold more complex data structures
 
 * Sorted sets: 根据score进行排行。retrieve(检索) a range of elements 
 
-* Hashes :fields(string) associated with values(string). 
+* Hashes :fields(string) associated with values(string). --
 
 * Bit arrays: 
 
@@ -76,6 +75,7 @@ The maximum allowed key size is **512 MB.**
 #### 数据类型 
 
 ============================== String =====================================
+
 ### String 
 
 相关的操作命令
@@ -182,7 +182,7 @@ Note that calling **EXPIRE/PEXPIRE** with a **non-positive** timeout or EXPIREAT
 
 ###### expire d -2  => delete d
 
-PERSIST  remove time out
+PERSIST remove time out
 
 Remove the existing timeout on key, turning the key from volatile (a key with an expire set) to persistent (a key that will never expire as no timeout is associated)
 
