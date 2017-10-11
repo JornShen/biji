@@ -37,14 +37,15 @@ HashSet：
 
 实现：实际上的HashSet内部的实现为一个 **HashMap**。HashSet添加一个元素时，添加的值为HashMap的Key值，而一个 Object对象 却为一个Value值。HashSet无序不重复的属性则来自于HashMap。Map的key值不能重复。
 
-采用**哈希算法**来实现Set接口；
+采用 **哈希算法** 来实现Set接口；
 
-唯一性保证：重复对象**equals**方法返回为true；
+唯一性保证：重复对象 **equals** 方法返回为true；
 
 重复对象hashCode方法返回相同的整数，不同对象hashCode尽量保证不同（提高效率）
 
+容量默认是 16, 负载因子默认是 0.75, default initial capacity (16) and load factor (0.75).
 
-TreeSet：
+TreeSet：和HashSet是一样的，也用 ** TreeMap来实现的 **
 
 在元素添加的同时，进行排序。也要给出排序规则；
 
@@ -52,9 +53,9 @@ TreeSet：
 
 如果想把自定义类的对象存入TreeSet进行排序, 那么必须实现Comparable接口
 
-在使用TreeSet存储对象的时候, add()方法内部就会自动调用compareTo()方法进行比较, 根据比较结果使用二叉树形式进行存储
+在使用TreeSet存储对象的时候, add() 方法内部就会自动调用compareTo()方法进行比较, 根据比较结果使用二叉树形式进行存储
 
-底层结构是**二叉树(TreeMap)**　**红黑树** 实现。按照树节点进行存储和取出
+底层结构是 **二叉树(TreeMap)**　**红黑树** 实现。按照树节点进行存储和取出
 
 #### Map
 
@@ -81,7 +82,7 @@ Hashtable：
 
 问题：
 
-1. Map 没有继承 Collections 接口， 从改接口就有看出不可能集成的。
+1. Map 没有继承 Collections 接口， 从该接口就有看出不可能继承的。
 
 2. HashMap 是如何存放 null 的？
 
@@ -91,12 +92,11 @@ HashMap是根据key的hashCode来寻找存放位置的，那当key为null时，h
 
 HashMap是非synchronized的，线程非安全的，并可以接受null(HashMap可以接受为null的键值(key)和值(value)，而Hashtable则不行()。Hashtable是线程安全的。
 
-另一个区别是HashMap的迭代器(Iterator)是 **fail-fast迭代器** ，而Hashtable的enumerator迭代器 **不是fail-fast的** 。当有其它线程改变了HashMap的结构（增加 set或者移除元素 remove），将会抛出ConcurrentModificationException，但迭代器本身的remove()方法移除元素则不会抛出ConcurrentModificationException异常.
+另一个区别是 HashMap的迭代器(Iterator)是 **fail-fast迭代器** ，而Hashtable的enumerator迭代器 **不是fail-fast的** 。当有其它线程改变了HashMap的结构（增加 set或者移除元素 remove），将会抛出ConcurrentModificationException，但迭代器本身的remove()方法移除元素则不会抛出ConcurrentModificationException异常.
 
 4. ConcurrentHashMap 和 HashMap 的区别key没找到的null还是有key值为null，这在多线程里面是模糊不清的，所以压根就不让put null
 
-HashMap 是 线程不安全的， ConcurrentHashMap 是hashmap的线程安全的版本。hashmap key 可以是null， 而 ConcurrentHashMap 不能value 不能是null, 会导致歧义。因为无法辨别
-key没找到的null还是有key值为null，这在多线程里面是模糊不清的，所以压根就不让put null.
+HashMap 是 线程不安全的， ConcurrentHashMap 是hashmap的线程安全的版本。hashmap key 可以是null， 而 ConcurrentHashMap 不能value 不能是null, 会导致歧义。因为无法辨别 key 没找到的null还是有key值为null，这在多线程里面是模糊不清的，所以压根就不让put null.
 
 5. Hashtable 和 ConcurrentHashMap 的区别 ?
 
@@ -106,7 +106,7 @@ Hashtable 采用表级锁， ConcurrentHashMap 采用 分段锁
 
 为什么重写了equals方法就必须重写hashCode方法呢？
 
-equals是判断 key 方法相同，但是，如果只重写equals方法而不重写hashCode方法的话，即使这两个对象通过equals方法判断是相等的，但是因为没有重写hashCode方法，他们的hashCode是不一样的，这样就会被散列到不同的位置去，变成错误的结果了。
+equals是判断 key 方法相同，但是，如果只重写equals方法而 不重写hashCode方法 的话，即使这两个对象通过equals方法判断是相等的，但是因为没有重写hashCode方法，他们的hashCode是不一样的，这样就会被散列到不同的位置去，变成错误的结果了。
 
 6. ConcurrentHashMap的实现原理
 
@@ -125,3 +125,33 @@ jdk 1.8 的变化
 2. 将原先table数组＋单向链表的数据结构，变更为table数组＋单向链表＋红黑树的结构.
 
 如果还是采用单向列表方式，那么查询某个节点的时间复杂度为O(n)；因此，对于个数超过8(默认值)的列表，jdk1.8中采用了红黑树的结构，那么查询的时间复杂度可以降低到O(logN)，可以改进性能。
+
+
+7. hashmap 是如何实现的?
+
+hash buckets
+
+首先根据hashCode()做hash，然后确定bucket的index；
+如果bucket的节点的key不是我们需要的，则通过keys.equals()在链中找。
+
+![](https://yikun.github.io/2015/04/01/Java-HashMap%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E7%8E%B0/)
+
+put函数大致的思路为：
+
+对key的hashCode()做hash，然后再计算index;
+如果没碰撞直接放到bucket里；
+如果碰撞了，以链表的形式存在buckets后；
+如果碰撞导致链表过长(大于等于TREEIFY_THRESHOLD)，就把链表转换成红黑树；
+如果节点已经存在就替换old value(保证key的唯一性)
+如果bucket满了(超过load factor*current capacity)，就要resize。
+
+get函数的思路
+
+bucket里的第一个节点，直接命中；
+如果有冲突，则通过key.equals(k)去查找对应的entry
+若为树，则在树中通过key.equals(k)查找，O(logn)；
+若为链表，则在链表中通过key.equals(k)查找，O(n)。
+
+hash的过程：高16bit不变，低16bit和高16bit做了一个异或。其中代码注释是这样写的。
+
+计算下标：在设计hash函数时，因为目前的table长度n为2的幂，而计算下标的时候，是这样实现的(使用&位操作，而非%求余)：
