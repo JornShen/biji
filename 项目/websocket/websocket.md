@@ -30,7 +30,7 @@ WebSocket用于在Web浏览器和服务器之间进行任意的**双向数据传
 
 这两种方式的特点，不断的建立HTTP连接，然后发送请求request，之后服务器等待处理。服务端体现的是一种**被动性**，同时这种处理方式，**非常耗费网络带宽和服务器资源**。
 
-###### WebSocket技术的优点：
+###### WebSocket 技术的优点：
 
 1）通过第一次HTTP Request建立了连接之后，**后续的数据交换都不用再重新发送 HTTP Request，节省了带宽资源**；
 
@@ -82,7 +82,7 @@ Ping/Pong帧： Ping帧 和 Pong帧 用于连接的**保活(keepalive)或者诊�
 
 java的实现：
 
-java 定义了一套 javax.servlet-api, 一个 HttpServlet 就是一个 HTTP 服务。java websocket 并非基于 servlet-api 简单扩展, 而是新定义了一套 javax.websocket-api。一个 websocket 服务对应一个 Endpoint。与ServletContext 对应, websocket-api 也定义了 WebSocketContainer, 而编程方式注册 websocket 的接口是继承自WebSocketContainer 的 ServerContainer。一个 websocket 可以接受并管理多个连接, 因此可被视作一个 server。主流 servlet 容器都支持 websocket, 如 tomcat, jetty 等。
+java 定义了一套 javax.servlet-api, 一个 HttpServlet 就是一个 HTTP 服务。java websocket 并非基于 servlet-api 简单扩展, 而是新定义了一套 javax.websocket-api。一个 websocket 服务对应一个 Endpoint。与ServletContext 对应, websocket-api 也定义了 WebSocketContainer, 而编程方式注册 websocket 的接口是继承自 WebSocketContainer 的 ServerContainer。 一个 websocket 可以接受并管理多个连接, 因此可被视作一个 server。主流 servlet 容器都支持 websocket, 如 tomcat, jetty 等。
 
 **Endpoint 是有状态的, 容器为每个会话创建一个 Endpoint 对象实例, 维护当前会话状态信息**。 所以注册 Endpoint 必须使用类而不能使用对象, 且 Endpoint 类必须有无参构建函数。而 Servlet 是无状态的, 可以使用 Servlet 实例注册, 多连接**多线程均只有一个 Servlet 对象实例** (servlet是线程不安全的，只能在方法里面使用)。
 
@@ -92,7 +92,7 @@ HTTP（1.0, 1.1 支持异步请求） 请求是**串行的**, 一个 HTTP 长连
 
 spring 的实现
 
-到 java websocket-api 要求使用 Endpoint class 注册 websocket, 然后由 **Servlet 容器为每个连接创建 Endpoint 对象实例**, 这样就很难将 Endpoint 实例纳入 spring 容器中。spring 对 websocket 的处理与使用 DispatcherServlet 处理 HTTP 请求类似。spring 定义了 WebSocketHandler 接口处理 websocket 请求, 类似 HTTP 的 HttpRequestHandler。然后 **spring 拦截所有托管的 websocket 请求, 分发到 WebSocketHandler 上**。唯一的缺点是 WebSocketHandler 与HttpRequestHandler 一样是无状态的单例, 不能直接保存单个会话状态, 然而这并没有关系。
+到 java websocket-api 要求使用 Endpoint class 注册 websocket, 然后由 **Servlet 容器为每个连接创建 Endpoint 对象实例**, 这样就很难将 Endpoint 实例纳入 spring 容器中。spring 对 websocket 的处理与使用 DispatcherServlet 处理 HTTP 请求类似。spring 定义了 WebSocketHandler 接口处理 websocket 请求, 类似 HTTP 的 HttpRequestHandler。然后 **spring 拦截所有托管的 websocket 请求, 分发到 WebSocketHandler 上**。唯一的缺点是 WebSocketHandler 与 HttpRequestHandler 一样是无状态的单例, 不能直接保存单个会话状态, 然而这并没有关系。
 
 
 [newcode for websocket](https://www.nowcoder.com/discuss/21019)

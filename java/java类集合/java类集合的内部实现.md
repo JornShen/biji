@@ -6,7 +6,7 @@
 
 ### List
 
-ArrayList的内部实现为一个**Object数组**，重载的两个构造方法，默认长度为**10**。
+ArrayList的内部实现为一个 **Object数组**，重载的两个构造方法，默认长度为**10**。
 增加元素：
 
 ArrayList是怎么实现容量自增.
@@ -25,7 +25,7 @@ private void grow(int minCapacity) {
 }
 ```
 
-LinkedList： 底层用**双向循环链表**实现的List
+LinkedList： 底层用 **双向链表** 实现的List
 
 Vector: 底层用**数组**实现List接口的另一个类；
 特点：重量级，占据更多的系统开销，**线程安全**；
@@ -86,13 +86,13 @@ Hashtable：
 
 2. HashMap 是如何存放 null 的？
 
-HashMap是根据key的hashCode来寻找存放位置的，那当key为null时，hash映射到table[0]。for循环遍历，当key为null的时候，用value 值进行替换，返回原来的value值， 当没有找到把这个值添加在table[0]链表的表头。
+HashMap是根据key的hashCode来寻找存放位置的，那当key为null时，hash映射到table[0]。for循环遍历，当key为null的时候，用value 值进行替换，返回原来的value值， 当没有找到把这个值添加在table[0]链表的表头。链地址解决冲突都是放到链表的表头。
 
-3. HashMap 和 Hashtable的区别？
+3. HashMap 和 Hashtable 的区别？
 
 HashMap是非synchronized的，线程非安全的，并可以接受null(HashMap可以接受为null的键值(key)和值(value)，而Hashtable则不行()。Hashtable是线程安全的。
 
-另一个区别是 HashMap的迭代器(Iterator)是 **fail-fast迭代器** ，而Hashtable的enumerator迭代器 **不是fail-fast的** 。当有其它线程改变了HashMap的结构（增加 set或者移除元素 remove），将会抛出ConcurrentModificationException，但迭代器本身的remove()方法移除元素则不会抛出ConcurrentModificationException异常.
+另一个区别是 HashMap的迭代器(Iterator)是 **fail-fast迭代器** ，而Hashtable的enumerator迭代器 **不是fail-fast的** 。当有其它线程改变了HashMap的结构（增加 set或者移除元素 remove），将会抛出 ConcurrentModificationException ，但迭代器本身的remove()方法移除元素则不会抛出ConcurrentModificationException异常.
 
 4. ConcurrentHashMap 和 HashMap 的区别key没找到的null还是有key值为null，这在多线程里面是模糊不清的，所以压根就不让put null
 
@@ -113,6 +113,8 @@ equals是判断 key 方法相同，但是，如果只重写equals方法而 不�
 jdk 1.7
 
 [](http://www.cnblogs.com/ITtangtang/p/3948786.html)
+
+java 7 之前是采用锁分段技术，segments 作为分段锁，对应一个 segment 数组，数据分段访问可以提高并发性，一个 segment 对应一个 HashEntry 数组，采用链地址法解决冲突。读取的时候不加锁,因为 volatile, put 的时候加锁。
 
 jdk 1.8 的变化
 
@@ -152,6 +154,8 @@ bucket里的第一个节点，直接命中；
 若为树，则在树中通过key.equals(k)查找，O(logn)；
 若为链表，则在链表中通过key.equals(k)查找，O(n)。
 
-hash的过程：高16bit不变，低16bit和高16bit做了一个异或。其中代码注释是这样写的。
+hash的过程：**高16bit不变，低16bit和高16bit做了一个异或**。其中代码注释是这样写的。减少冲突。
 
 计算下标：在设计hash函数时，因为目前的table长度n为2的幂，而计算下标的时候，是这样实现的(使用&位操作，而非%求余)：
+
+n - 1 & hash

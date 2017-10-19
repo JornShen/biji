@@ -4,10 +4,10 @@
 
 2. 怎么执行睡眠? 先用#cat /sys/power/state查看支持哪种方式；再用echo standby > /sys/power/state就可以了（或mem，disk）；
 
-3. 查看当前用户id：whoami；帮助：man
+3. 查看当前用户id： whoami ；帮助：man
 
 4. 查看当前目录下的文件和文件夹：ls
-参数：   -a    全部文件
+参数：         -a    全部文件
               -d    只显示目录
               -l     详细信息
               -n    列出UID怀GID
@@ -35,6 +35,7 @@
 7. 查看文件内容有哪些命令可以使用？vi、vim、cat、more、head、tail
 
 8. 打印某个文件的某一行。
+   sed -n '5,10p' filename
 
 9. 目录创建用什么命令？创建文件用什么命令？复制文件用什么命令？
     创建目录：mkdir；
@@ -97,6 +98,37 @@
     查看磁盘使用空间：df -h；
     空闲空间：df -h。
 
+    查看某个文件或目录占用磁盘空间的大小？
+    du 不带参数du的命令，可以循环列出所有文件和文件夹所使用的空间
+
+    -h 表示使用「Human-readable」的输出，也就是在档案系统大小使用 GB、MB 等易读的格式。    
+
+    --max-depth=X,  显示文件的深度
+
+例如：
+
+du -h --max-depth=1 work/testing 显示文件夹的大小
+
+du -h --max-depth=1 work/testing/* 显示文件夹下的文件的大小
+
+du和df命令异同：
+
+du 统计文件大小相加     
+
+df  统计数据块使用情况
+
+如果有一个进程在打开一个大文件的时候,这个大文件直接被rm 或者mv掉，则du会更新统计数值，df不会更新统计数值,还是认为空间没有释放。直到这个打开大文件的进程被Kill掉。
+
+查看linux文件目录的大小和**文件夹包含的文件数**
+
+du -sh xmldb/ 统计文件的大小
+
+du | wc -l 统计某个文件夹下面的文件的数目。
+
+du -sm * | sort -n //统计当前目录大小 并安大小 排序
+
+du -h --max-depth=0 * 查看当前目录下，所有文件的大小。
+
 26.  使用什么命令查看ip地址及接口信息？
      ifconfig
 
@@ -133,3 +165,41 @@ iostat -xz  主要用于查看机器磁盘IO情况。
 free –m 查看系统内存的使用情况。
 
 top  包含了前面好几个命令的检查的内容。比如系统负载情况（uptime）、系统内存使用情况（free）、系统CPU使用情况（vmstat）等。因此通过这个命令，可以相对全面的查看系统负载的来源。同时，top命令支持排序，可以按照不同的列排序，方便查找出诸如内存占用最多的进程、CPU占用率最高的进程等。
+
+再按 1 ，查看 cpu 的核的情况。
+
+
+31. 查看操作系统进程的阻塞状态？
+
+ps工具标识进程的5种状态码:
+  D 不可中断 uninterruptible sleep (usually IO)
+  R 运行 runnable (on run queue)
+  S 中断 sleeping
+  T 停止 traced or stopped
+  Z 僵死 a defunct ("zombie") process
+
+其它状态还包括 W(无驻留页), < (高优先级进程), N(低优先级进程), L(内存锁页).
+
+查看进程状态  ps -aux
+
+程序树的程序显示 (显示进程下有哪些子进程) ps -axjf
+
+ps格式输出来查看进程状态:
+
+ps -eo user,stat..,cmd
+
+user 用户名
+uid 用户号
+pid 进程号
+ppid 父进程号
+size 内存大小, Kbytes字节.
+vsize 总虚拟内存大小, bytes字节(包含code+data+stack)
+share 总共享页数
+nice 进程优先级(缺省为0, 最大为-20)
+priority(pri) 内核调度优先级
+pmem 进程分享的物理内存数的百分比
+trs 程序执行代码驻留大小
+rss 进程使用的总物理内存数, Kbytes字节
+time 进程执行起到现在总的CPU暂用时间
+stat 进程状态
+cmd(args) 执行命令的简单格式

@@ -10,7 +10,7 @@ hashMap 为什么不是线程安全?
 
 HashMap在并发执行put操作时会引起死循环，是因为多线程会导致HashMap的Entry链表形成**环形数据结构**，一旦形成环形数据结构，**Entry的next节点永远不为空，就会产生死循环获取Entry**。
 
-##### java 7  ConcurrentHashMap的实现
+##### java 7  ConcurrentHashMap的实现 (重点)
 ConcurrentHashMap的锁分段技术可有效提升并发访问率
 
 首先将数据分成一段一段地存储，然后给每一段数据配一把锁，当一个线程占用锁访问其中一个段数据的时候，其他段的数据也能被其他线程访问。
@@ -35,6 +35,8 @@ get操作的高效之处在于整个**get过程不需要加锁**，除非读到�
 置，然后将其放在HashEntry数组里。
 
 ######  size() 的实现
+
+乐观锁的思想方式
 
 ConcurrentHashMap的做法是 **先尝试2次** 通过不锁住Segment的方式来统计各个Segment大小，如果统计的过程中，容器的count发生了变化，则再采用加锁的方式来统计所有Segment的大小。
 
@@ -165,7 +167,6 @@ AtomicReference：原子更新引用类型。
 ·AtomicLongFieldUpdater：原子更新长整型字段的更新器。
 ·AtomicStampedReference：原子更新带有版本号的引用类型。
 
-
 #####　CountDownLatch
 
 CountDownLatch的构造函数接收一个int类型的参数作为计数器，如果你想等待N个点完成，这里就传入N。
@@ -268,8 +269,10 @@ submit()方法用于提交 **需要返回值的任务**。线程池会返回一�
 
 通过调用线程池的shutdown或shutdownNow方法来关闭线程池。它们的原理是 **遍历线程池中的工作线程，然后逐个调用线程的interrupt方法来中断线程**，所以无法响应中断的任务可能永远无法终止
 
-它们存在一定的区别，shutdownNow 首先**将线程池的状态设置成
-STOP，然后尝试停止所有的正在执行或暂停任务的线程，并返回等待执行任务的列表**，而shutdown只是将线程池的状态设置成 **SHUTDOWN** 状态，然后**中断所有没有正在执行任务的线程**。
+它们存在一定的区别，shutdownNow 首先 **将线程池的状态设置成
+STOP**，不在处理任务队列中的任务，然后尝试 **停止所有的正在执行或暂停任务执行的线程**，并返回等待执行任务的列表。
+
+而 shutdown只是将线程池的状态 **设置成 SHUTDOWN** 状态，然后 **中断所有没有正在执行任务的线程**, 而正在执行任务的线程则继续让其执行，不可再往线程池中添加任务， 线程池不会立刻退出，直到添加到线程池中的任务都已经处理完成，才会退出。
 
 (设定线程池的状态不同,now --> stop, down --> shutdown, )
 
@@ -348,25 +351,24 @@ CachedThreadPool
 
 FixedThreadPool。下面是Executors提供的，创建**使用固定线程数**的FixedThreadPool的API.
 
-适用于为了满足资源管理的需求，而需要限制当前线程数量的应用场景，它适用于负载比较重的服务器。
+适用于为了满足资源管理的需求，而需要限制当前线程数量的应用场景，它适用于 **负载比较重的服务器**。
 
 SingleThreadExecutor。下面是Executors提供的，创建使用**单个线程**的SingleThreadExecutor的API.
 
-适用于需要保证顺序地执行各个任务；并且在任意时间点，不会有多个线程是活动的应用场景。
+适用于需要 **保证顺序地执行各个任务**；并且在任意时间点，不会有多个线程是活动的应用场景。
 
 CachedThreadPool。下面是Executors提供的，创建一个**会根据需要创建新线程**的CachedThreadPool的API。
 
-大小无界的线程池，适用于执行很多的**短期异步任务的小程序**，或者
-是**负载较轻**的服务器
+大小无界的线程池，适用于执行很多的 **短期异步任务的小程序**，或者，适用于**负载较轻**的服务器
 
 ###### ScheduledThreadPoolExecutor
-ScheduledThreadPoolExecutor通常使用工厂类Executors来创建。Executors可以创建2种类型的ScheduledThreadPoolExecutor
+ScheduledThreadPoolExecutor 通常使用工厂类Executors来创建。Executors可以创建2种类型的ScheduledThreadPoolExecutor
 
 ScheduledThreadPoolExecutor。包含**若干个线程**的ScheduledThreadPoolExecutor。
 
 SingleThreadScheduledExecutor。只包含**一个线程**的ScheduledThreadPoolExecutor。
 
-ScheduledThreadPoolExecutor适用于需要多个后台线程执行**周期任务**，同时为了满足资源管理的需求而需要**限制后台线程的数量**的应用场景。
+ScheduledThreadPoolExecutor 适用于需要多个后台线程执行**周期任务**，同时为了满足资源管理的需求而需要**限制后台线程的数量**的应用场景。
 
 SingleThreadScheduledExecutor适用于需要**单个后台线程执行周期任务**，同时需要保证顺序地执行各个任务的应用场景。
 

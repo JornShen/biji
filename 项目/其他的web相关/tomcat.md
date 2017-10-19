@@ -8,11 +8,11 @@ Tomcat部署Webapp时，依赖context.xml和web.xml 两个配置文件部署web�
 tomcat根目录在tomcat中叫<CATALINA_HOME>
 
 <CATALINA_HOME>/bin：存放各种平台下启动和关闭Tomcat的脚本文件.其中有个档是catalina.bat,打开这个windows配置文件,在
-非注释行加入JDK路径,例如 : SET  JAVA_HOME=C:\j2sdk1.4.2_06 保存后,就配置好tomcat环境了. 
+非注释行加入JDK路径,例如 : SET  JAVA_HOME=C:\j2sdk1.4.2_06 保存后,就配置好tomcat环境了.
 
 startup.bat是windows下启动tomcat的文件. shutdown.bat是关闭tomcat的文件.
 
-<CATALINA_HOME>/conf：存放不同的配置文件（如：server.xml和web.xml）； 
+<CATALINA_HOME>/conf：存放不同的配置文件（如：server.xml和web.xml）；
 
 　　server.xml文件:该文件用于配置和server相关的信息，比如**tomcat启动的端口号、配置host主机、配置Context**
 
@@ -21,17 +21,17 @@ startup.bat是windows下启动tomcat的文件. shutdown.bat是关闭tomcat的文
 　　tomcat-users.xml文件：配置tomcat的用户密码与权限。
 
 　　context.xml：定义web应用的默认行为。
-<CATALINA_HOME>/lib：存放Tomcat运行需要的库文件（JARS）； 
-<CATALINA_HOME>/logs：存放Tomcat执行时的LOG文件； 
+<CATALINA_HOME>/lib：存放Tomcat运行需要的库文件（JARS）；
+<CATALINA_HOME>/logs：存放Tomcat执行时的LOG文件；
 <CATALINA_HOME>/temp: 运行时产生的文件。
-<CATALINA_HOME>/webapps：Tomcat的主要Web发布目录（包括应用程序示例）； 
-<CATALINA_HOME>/work：存放jsp编译后产生的class文件； 
+<CATALINA_HOME>/webapps：Tomcat的主要Web发布目录（包括应用程序示例）；
+<CATALINA_HOME>/work：存放jsp编译后产生的class文件；
 
 ![](pic/t1.jpg)
 
 #### 技术的架构
 
-Tomcat Server 
+Tomcat Server
 
 Tomcat的一个实例，通常一个JVM只能包含一个Tomcat实例。因此一台物理服务器上可以在启动多个JVM的情况下在每一个JVM中启动一个Tomcat实例。每个实例分属于一个独立的管理端口。这是一个Tomcat **顶级组件**。
 
@@ -120,24 +120,24 @@ http://localhost:8080/wsota/wsota_index.jsp
 
 1. 请求被发送到本机端口8080，被在那里侦听的Coyote HTTP/1.1 Connector获得 (Connect 侦听到)
 2. Connector把该请求交给它所在的Service的Engine来处理，并等待来自Engine的回应 (交给 engine 进行处理)
-3. Engine获得请求localhost/wsota/wsota_index.jsp，匹配它所拥有的所有虚拟主机Host (engine 匹配 host 主机)
+3. Engine 获得请求 localhost/wsota/wsota_index.jsp，匹配它所拥有的所有虚拟主机Host (engine 匹配 host 主机)
 4. Engine匹配到名为localhost的Host（即使匹配不到也把请求交给该Host处理，因为该Host被定义为该Engine的默认主机）
 5. localhost Host获得请求/wsota/wsota_index.jsp，匹配它所拥有的所有Context.(host 根据 contextpath 找到 context)
-6. path=”/wsota”的Context获得请求/wsota_index.jsp，在它的mapping table中寻找对应的servlet 
-7. Context匹配到URL PATTERN为*.jsp的servlet，对应于JspServlet类 (将查询mapping table，找到被请求的servlet, 交给servlet 执行请求) 
+6. path=”/wsota”的Context获得请求/wsota_index.jsp，在它的mapping table中寻找对应的servlet
+7. Context匹配到URL PATTERN为*.jsp的servlet，对应于JspServlet类 (将查询mapping table，找到被请求的servlet, 交给servlet 执行请求)
 8. 构造HttpServletRequest对象和HttpServletResponse对象，作为参数调用JspServlet的doGet或doPost方法
 	( 构造 request 对象和 response 对象来调用 servlet 执行 )
 9. Context把执行完了之后的HttpServletResponse对象返回给Host。（将执行结果返回给 host）
-10. Host把HttpServletResponse对象返回给Engine (由host 返回给engine)
-11. Engine把HttpServletResponse对象返回给Connector (返回给 connector )
-12. Connector把HttpServletResponse对象返回给客户browser ( connector 将对象返回给browser )
+10. Host 把 HttpServletResponse 对象返回给Engine (由host 返回给engine)
+11. Engine 把 HttpServletResponse 对象返回给Connector (返回给 connector )
+12. Connector 把 HttpServletResponse 对象返回给客户browser ( connector 将对象返回给browser )
 
 #### 源码解析
 
 从 Service 接口中定义的方法中可以看出，它主要是为了关联 Connector 和 Container，同时会初始化它下面的其它组件，注意接口中它并没有规定一定要控制它下面的组件的生命周期。
 
 所有组件的生命周期在一个 Lifecycle(使组件具有生命周期) 的接口中控制。
- 
+
 Connector 组件是 Tomcat 中两个核心组件之一，它的主要任务是**负责接收浏览器的发过来的 tcp 连接请求，创建一个 Request 和 Response 对象分别用于和请求端交换数据，然后会产生一个线程来处理这个请求并把产生的 Request 和 Response 对象传给处理这个请求的线程**，处理这个请求的线程就是 Container 组件要做的事了。
 
 多线程的处理是 Connector 设计的核心。
